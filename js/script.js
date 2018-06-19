@@ -22,6 +22,10 @@ function game() {
 	}
 
 	function showTilePreview(player) {
+		//const previewedElem = event.target;
+		//if (previewedElem.className == "box-filled-1") {// || event.target.className == "box-filled-2") {
+		//console.log("taken pal");
+		//}
 		if (player === 1) {
 			event.target.style.backgroundImage = "url(img/o.svg)";
 		} else {
@@ -31,9 +35,9 @@ function game() {
 
 	function selectTile(player) {
 		if (player === 1) {
-			event.target.classList.add("box-filled-1");
+			event.target.classList.add("box-filled-1"); // changes the display of the tile per player1 colour
 		} else {
-			event.target.classList.add("box-filled-2");
+			event.target.classList.add("box-filled-2"); // changes the display of the tile per player2 colour
 		}
 	}
 
@@ -41,18 +45,36 @@ function game() {
 	// function to invoke when it is the next player's turn
 	function turn(player) {
 		//player = 1;
-		//symbol = "O";
 		updateHeaders(player);
 		const boardUL = document.querySelector(".boxes"); // var for the whole board
-		boardUL.addEventListener("mouseover", function () {
-			showTilePreview(player)
-		}); // event listener for when any part of the whole board is moused over
+		// event listener for when any part of the whole board is moused over
+		boardUL.addEventListener("mouseover", function (event) {
+			if (event.target.classList.contains("box-filled-1") ||
+				event.target.classList.contains("box-filled-2")) {
+				console.log("That tile is already selected!");
+			} else {
+				showTilePreview(player);
+			}
+		});
+
+		// event listener for when any part of the whole board is moused out
 		boardUL.addEventListener("mouseout", function () {
 			event.target.style.backgroundImage = "";
-		}); // event listener for when any part of the whole board is moused out
-		boardUL.addEventListener("click", function () {
-			selectTile(player)
 		});
+
+		// when a tile is clicked, invoke the function "selectTile"
+		boardUL.addEventListener("click", function () {
+			selectTile(player);
+			if (player === 1) {
+				player = 2;
+			} else {
+				player = 1;
+			}
+			console.log(player);
+
+		});
+
+
 	}
 
 	//
@@ -61,8 +83,7 @@ function game() {
 	//divWinner.style.display = "none"; // hide the Winner screens
 	divBoard.style.display = ""; // unhide the Board screen
 	let player = 1; // let's start with player 1 ('O')
-	//let symbol = "O";
-	turn(player);
+	turn(player); // invoke the function "turn" for player 1 to play
 
 
 

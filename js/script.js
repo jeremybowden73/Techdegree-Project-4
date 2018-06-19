@@ -29,6 +29,14 @@ function game() {
 		}
 	}
 
+	function selectTile(player) {
+		if (player === 1) {
+			event.target.classList.add("box-filled-1");
+		} else {
+			event.target.classList.add("box-filled-2");
+		}
+	}
+
 
 	// function to invoke when it is the next player's turn
 	function turn(player) {
@@ -42,6 +50,9 @@ function game() {
 		boardUL.addEventListener("mouseout", function () {
 			event.target.style.backgroundImage = "";
 		}); // event listener for when any part of the whole board is moused out
+		boardUL.addEventListener("click", function () {
+			selectTile(player)
+		});
 	}
 
 	//

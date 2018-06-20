@@ -10,22 +10,19 @@
 */
 
 function game() {
+	const boardUL = document.querySelector(".boxes"); // var for the whole board
 	// function to update the gameboard screen headers depending on whose turn it is (player 1 or player 2)
-	function updateHeaders(currentPlayer) {
-		document.getElementById("player1").classList.remove("active"); // var for the player1 header ('O')
-		document.getElementById("player2").classList.remove("active"); // var for the player2 header ('X')
-		if (currentPlayer === 1) {
+	function updateHeaders(player) {
+		if (player === 1) {
 			document.getElementById("player1").classList.add("active");
+			document.getElementById("player2").classList.remove("active");
 		} else {
 			document.getElementById("player2").classList.add("active");
+			document.getElementById("player1").classList.remove("active");
 		}
 	}
 
 	function showTilePreview(player) {
-		//const previewedElem = event.target;
-		//if (previewedElem.className == "box-filled-1") {// || event.target.className == "box-filled-2") {
-		//console.log("taken pal");
-		//}
 		if (player === 1) {
 			event.target.style.backgroundImage = "url(img/o.svg)";
 		} else {
@@ -36,7 +33,7 @@ function game() {
 	function selectTile(player) {
 		if (player === 1) {
 			event.target.classList.add("box-filled-1"); // changes the display of the tile per player1 colour
-		} else {
+		} else if (player === 2) {
 			event.target.classList.add("box-filled-2"); // changes the display of the tile per player2 colour
 		}
 	}
@@ -44,50 +41,67 @@ function game() {
 
 	// function to invoke when it is the next player's turn
 	function turn(player) {
-		//player = 1;
+		if (player === 1) {
+			player = 2;
+		} else {
+			player = 1;
+		}
+		console.log(`Current player is ${player}`);
 		updateHeaders(player);
-		const boardUL = document.querySelector(".boxes"); // var for the whole board
+		playerChooseTile(player);
+	}
+
+	function playerChooseTile(player) {
+		//console.log(boardUL);
 		// event listener for when any part of the whole board is moused over
-		boardUL.addEventListener("mouseover", function (event) {
-			if (event.target.classList.contains("box-filled-1") ||
-				event.target.classList.contains("box-filled-2")) {
-				console.log("That tile is already selected!");
-			} else {
+		boardUL.addEventListener("mouseover", mousedOver, false);
+		function mousedOver(event) {
+			console.log("mouse in");
+			if (!event.target.classList.contains("box-filled-1") &&
+				!event.target.classList.contains("box-filled-2")) {
+				console.log("you can choose that one");
 				showTilePreview(player);
 			}
-		});
+		}
 
 		// event listener for when any part of the whole board is moused out
-		boardUL.addEventListener("mouseout", function () {
+		boardUL.addEventListener("mouseout", mousedOut, false);
+		function mousedOut(event) {
 			event.target.style.backgroundImage = "";
-		});
+		}
 
-		// when a tile is clicked, invoke the function "selectTile"
-		boardUL.addEventListener("click", function () {
-			selectTile(player);
-			if (player === 1) {
-				player = 2;
+		// event listener for when a tile is clicked on
+		boardUL.addEventListener("click", clickedOn, false);
+		function clickedOn(event) {
+			if (!event.target.classList.contains("box-filled-1") &&
+				!event.target.classList.contains("box-filled-2")) {
+				console.log("valid selection");
+				boardUL.removeEventListener("mouseover", mousedOver, false);
+				boardUL.removeEventListener("mouseout", mousedOut, false);
+				boardUL.removeEventListener("click", clickedOn, false);
+				selectTile(player);
+				turn(player);
 			} else {
-				player = 1;
+				console.log("NOT a valid selection");
 			}
-			console.log(player);
-
-		});
-
-
+		}
 	}
+
+
 
 	//
 	// start of the game
 	divStart.style.display = "none"; // hide the Start screen
 	//divWinner.style.display = "none"; // hide the Winner screens
 	divBoard.style.display = ""; // unhide the Board screen
-	let player = 1; // let's start with player 1 ('O')
-	turn(player); // invoke the function "turn" for player 1 to play
-
-
+	let player = 2; // let's start with player 1 ('O') ///////////////////////////////////////////////////////
+	console.log("starting with player 2");
+	turn(player); // invoke the function "turn" for the first move to take place
 
 }
+
+
+// initial set-up; hide gameboard and show the start screen
 
 const divBoard = document.getElementById("board"); // create variable for the Board div (main game board screen)
 divBoard.style.display = "none"; // hide it initially

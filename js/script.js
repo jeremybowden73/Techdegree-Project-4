@@ -93,7 +93,6 @@ function showBoardScreen() {
 	}
 
 	function playerChooseTile(player) {
-		const boardUL = document.querySelector(".boxes"); // var for the whole board
 		// event listener for when any part of the whole board is moused over
 		boardUL.addEventListener("mouseover", mousedOver, false);
 		function mousedOver(event) {
@@ -118,7 +117,7 @@ function showBoardScreen() {
 				selectTile(player);
 				const winner = checkForWinner(player, boardUL);
 				if (winner) {
-					showWinnerScreen(winner);
+					let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 2 seconds for effect
 				} else {
 					turn(player);
 				}
@@ -132,7 +131,7 @@ function showBoardScreen() {
 		if (player === 2) {
 			playerClass = "box-filled-2"; // if player === 2
 		}
-		const allBoardLIs = boardUL.getElementsByTagName("li"); // array of all the tile <li> elements
+		//const allBoardLIs = boardUL.getElementsByTagName("li"); // array of all the tile <li> elements
 		const board = []; // array in which to store true or false values for each tile depending on whether the tile "belongs" to the current player
 		for (let i = 0; i < 9; i++) {
 			if (allBoardLIs[i].classList.contains(playerClass)) {
@@ -147,25 +146,26 @@ function showBoardScreen() {
 			(board[6] && board[7] && board[8]) || (board[0] && board[3] && board[6]) ||
 			(board[1] && board[4] && board[7]) || (board[2] && board[5] && board[8]) ||
 			(board[0] && board[4] && board[8]) || (board[2] && board[4] && board[6])) {
-			resetBoardElements();
 			return player;
 		}
 		// check for a tie by counting how many "true" elements are in the board array if there
 		// are 5 then player 1 must have had 5 turns, and there is no winner, so it must be a tie
 		if (board.filter(item => item === true).length === 5) {
-			resetBoardElements();
 			return 3; // "player 3" is a tie
 		}
 
-		// function to reset the board tiles if we had a winner or a tie
-		function resetBoardElements() {
-			for (let j = 0; j < 9; j++) {
-				allBoardLIs[j].classList.remove("box-filled-1");
-				allBoardLIs[j].classList.remove("box-filled-2");
-			}
-		}
+
 	}
 
+	// local variables for the showBoardScreen function
+	const boardUL = document.querySelector(".boxes"); // var for the whole board
+	const allBoardLIs = boardUL.getElementsByTagName("li"); // array of all the tile <li> elements
+	// reset the board tiles
+	for (let j = 0; j < 9; j++) {
+		allBoardLIs[j].classList.remove("box-filled-1");
+		allBoardLIs[j].classList.remove("box-filled-2");
+		allBoardLIs[j].style.backgroundImage = "";
+	}
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();
 	document.getElementById("board").style.display = "";

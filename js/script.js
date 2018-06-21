@@ -43,7 +43,6 @@ function setUp() {
 
 	// call the function to show the start screem
 	showStartScreen();
-
 }
 
 function showStartScreen() {

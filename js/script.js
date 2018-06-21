@@ -9,14 +9,10 @@
 
 */
 
-
-
-
-// initial set-up; create the start screen and the winner screen and hide all the screens
+// initial set-up; create the start screen and the winner screen, and hide all the screens
 function setUp() {
 	const divBoard = document.getElementById("board"); // create variable for the Board div (main game board screen)
 	divBoard.style.display = "none"; // hide it initially
-
 	const divBody = divBoard.parentNode;
 	divBody.id = ("body");
 	const divStart = document.createElement("div"); // create element for the Start page div
@@ -33,9 +29,9 @@ function setUp() {
 	divStart.innerHTML = startScreenHTML;
 
 	const divWinner = document.createElement("div"); // create element for the Winner page div
-	divWinner.classList.add("screen", "screen-win");
-	divWinner.id = ("winner");
-	divBody.insertBefore(divWinner, divBoard);
+	divWinner.classList.add("screen", "screen-win"); // add classes
+	divWinner.id = ("winner"); // and an id
+	divBody.insertBefore(divWinner, divBoard); // and insert it into the DOM
 
 	let winnerScreenHTML =
 		"<header>" +
@@ -44,10 +40,6 @@ function setUp() {
 		"<a href='#' class='button' id='newGameButton'>New game</a>" +
 		"</header>";
 	divWinner.innerHTML = winnerScreenHTML;
-
-	// divStart.style.display = "none"; // hide the Start screen
-	// divWinner.style.display = "none"; // hide the Winner screens
-	// divBoard.style.display = "none"; // hide the Board screen
 
 	// call the function to show the start screem
 	showStartScreen();
@@ -96,20 +88,16 @@ function showBoardScreen() {
 		} else {
 			player = 1;
 		}
-		console.log(`Current player is ${player}`);
 		updateHeaders(player);
 		playerChooseTile(player);
 	}
 
 	function playerChooseTile(player) {
 		const boardUL = document.querySelector(".boxes"); // var for the whole board
-		//console.log(boardUL);
 		// event listener for when any part of the whole board is moused over
 		boardUL.addEventListener("mouseover", mousedOver, false);
 		function mousedOver(event) {
-			//console.log("mouse in");
 			if (!event.target.classList.contains("box-filled-1") && !event.target.classList.contains("box-filled-2")) {
-				//console.log("you can choose that one");
 				showTilePreview(player);
 			}
 		}
@@ -124,7 +112,6 @@ function showBoardScreen() {
 		boardUL.addEventListener("click", clickedOn, false);
 		function clickedOn(event) {
 			if (!event.target.classList.contains("box-filled-1") && !event.target.classList.contains("box-filled-2")) {
-				//console.log("valid selection");
 				boardUL.removeEventListener("mouseover", mousedOver, false);
 				boardUL.removeEventListener("mouseout", mousedOut, false);
 				boardUL.removeEventListener("click", clickedOn, false);
@@ -183,22 +170,33 @@ function showBoardScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("board").style.display = "";
 	turn(2); // invoke the "turn" function for the first move to take place (turn toggles the player, so passing 2 to it will result in player 1 having the first go)
-
 }
 
 function showWinnerScreen(player) {
 	hideAllThreeMainDivScreens();
 	const winnerScreen = document.getElementById("winner");
+	// clear all the 'screen-win-x' classes from the winner div
+	winnerScreen.classList.remove("screen-win-one");
+	winnerScreen.classList.remove("screen-win-two");
+	winnerScreen.classList.remove("screen-win-tie");
+	// show the winner screen div
 	winnerScreen.style.display = "";
 	if (player === 1) {
 		winnerScreen.classList.add("screen-win-one");
+		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 1"
 	} else if (player === 2) {
 		winnerScreen.classList.add("screen-win-two");
+		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 2"
 	} else {
 		winnerScreen.classList.add("screen-win-tie");
+		winnerScreen.querySelector(".message").innerHTML = "It's A Tie"
 	}
 
+	// tweak the CSS to space the elements on the winner page a little
+	const message = winnerScreen.querySelector(".message");
+	message.style.marginTop = "15rem";
 	const newGameButton = document.getElementById("newGameButton");
+	newGameButton.style.marginTop = "5rem";
 	newGameButton.addEventListener("click", showBoardScreen, false);
 }
 

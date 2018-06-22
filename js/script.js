@@ -15,19 +15,48 @@ function setUp() {
 	divBoard.style.display = "none"; // hide it initially
 	const divBody = divBoard.parentNode;
 	divBody.id = ("body");
+
+	// create the Start screen
 	const divStart = document.createElement("div"); // create element for the Start page div
 	divStart.classList.add("screen", "screen-start"); // give it some classes
 	divStart.id = ("start"); // and give it an id
 	divBody.insertBefore(divStart, divBoard); // insert the Start page div into the <body> element before the Board div
 
-	// inject html content into the Start Screen main div
+	// inject html content into the Start screen main div
 	let startScreenHTML =
 		"<header>" +
 		"<h1> Tic Tac Toe</h1>" +
+		"<br><br><br><br>" +
+		"<div id=playersSelect></div>" +
+		"<br><br><br><br>" +
 		"<a href='#' class='button' id='startButton'>Start game</a>" +
 		"</header >";
 	divStart.innerHTML = startScreenHTML;
 
+
+	const playerSelectDiv = document.getElementById("playersSelect");
+	const playerSelectForm = document.createElement("form");
+	playerSelectDiv.appendChild(playerSelectForm);
+	const playerSelectFormHTML =
+		"<form>" +
+		"<p>Please select game type...</p>" +
+		"<div>" +
+		"<input type='radio' id='2players' name='players' checked>" +
+		"<label for='2players'>2 humans</label>" +
+		"</div>" +
+		"<div>" +
+		"<input type='radio' id='1player' name='players'>" +
+		"<label for='1player'>1 human vs computer</label>" +
+		"</div>" +
+		"<div id='submitPlayers'>" +
+		"<a href='#' class='button' id='playersSelectButton'>SELECT</a>" +
+		//"<button type='submit' class='button'>SELECT</button>" +
+		"</div>" +
+		"</div>" +
+		"</form>";
+	playerSelectForm.innerHTML = playerSelectFormHTML;
+
+	// create the Winner screen
 	const divWinner = document.createElement("div"); // create element for the Winner page div
 	divWinner.classList.add("screen", "screen-win"); // add classes
 	divWinner.id = ("winner"); // and an id
@@ -49,6 +78,13 @@ function showStartScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("start").style.display = "";
 	const startButton = document.getElementById("startButton");
+	startButton.style.display = "none"; // hide the Start Game button
+	const playersSelectButton = document.getElementById("playersSelectButton");
+	playersSelectButton.addEventListener("click", selectNumberOfPlayers, false);
+}
+
+function selectNumberOfPlayers() {
+	startButton.style.display = ""; // unhide the Start Game Button
 	startButton.addEventListener("click", showBoardScreen, false);
 }
 

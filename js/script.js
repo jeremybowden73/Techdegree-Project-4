@@ -88,8 +88,29 @@ function showBoardScreen() {
 			player = 1;
 		}
 		updateHeaders(player);
-		playerChooseTile(player);
+		if (player === 1) {
+			playerChooseTile(player);
+		} else {
+			cpuChooseTile(player); // player 2 is the computer
+		}
 	}
+
+	function cpuChooseTile(player) {
+		// choose a random tile
+		let tile = (Math.floor(Math.random() * 9));
+		if (!allBoardLIs[tile].classList.contains("box-filled-1") && !allBoardLIs[tile].classList.contains("box-filled-2")) {
+			allBoardLIs[tile].classList.add("box-filled-2");
+			const winner = checkForWinner(player, boardUL);
+			if (winner) {
+				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 2 seconds for effect
+			} else {
+				turn(player);
+			}
+		} else {
+			cpuChooseTile(player); // if the tile the cpu chose a tile that is not available, invoke the function again
+		}
+	}
+
 
 	function playerChooseTile(player) {
 		// event listener for when any part of the whole board is moused over
@@ -99,13 +120,11 @@ function showBoardScreen() {
 				showTilePreview(player);
 			}
 		}
-
 		// event listener for when any part of the whole board is moused out
 		boardUL.addEventListener("mouseout", mousedOut, false);
 		function mousedOut(event) {
 			event.target.style.backgroundImage = "";
 		}
-
 		// event listener for when a tile is clicked on
 		boardUL.addEventListener("click", clickedOn, false);
 		function clickedOn(event) {

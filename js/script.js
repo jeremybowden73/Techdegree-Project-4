@@ -149,15 +149,9 @@ function showBoardScreen() {
 		if (player === 2) {
 			playerClass = "box-filled-2"; // if player === 2
 		}
-		//const allBoardLIs = boardUL.getElementsByTagName("li"); // array of all the tile <li> elements
-		const board = []; // array in which to store true or false values for each tile depending on whether the tile "belongs" to the current player
-		for (let i = 0; i < 9; i++) {
-			if (allBoardLIs[i].classList.contains(playerClass)) {
-				board[i] = true;
-			} else {
-				board[i] = false;
-			}
-		}
+
+		// array in which to store true if the current player "owns" the tile or false if they don't
+		const board = allBoardLIs.map(each => each.classList.contains(playerClass) ? true : false);
 
 		// check for all 8 possible winning combinations and return if the current player is a winner
 		if ((board[0] && board[1] && board[2]) || (board[3] && board[4] && board[5]) ||
@@ -171,19 +165,18 @@ function showBoardScreen() {
 		if (board.filter(item => item === true).length === 5) {
 			return 3; // "player 3" is a tie
 		}
-
-
 	}
 
 	// local variables for the showBoardScreen function
 	const boardUL = document.querySelector(".boxes"); // var for the whole board
-	const allBoardLIs = boardUL.getElementsByTagName("li"); // array of all the tile <li> elements
+	const allBoardLIs = Array.from(boardUL.getElementsByTagName("li")); // array of all the tile <li> elements
 	// reset the board tiles
-	for (let j = 0; j < 9; j++) {
-		allBoardLIs[j].classList.remove("box-filled-1");
-		allBoardLIs[j].classList.remove("box-filled-2");
-		allBoardLIs[j].style.backgroundImage = "";
-	}
+	allBoardLIs.forEach(function (each) {
+		each.classList.remove("box-filled-1");
+		each.classList.remove("box-filled-2");
+		each.style.backgroundImage = "";
+	});
+
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();
 	document.getElementById("board").style.display = "";
@@ -193,7 +186,7 @@ function showBoardScreen() {
 function showWinnerScreen(player) {
 	hideAllThreeMainDivScreens();
 	const winnerScreen = document.getElementById("winner");
-	// clear all the 'screen-win-x' classes from the winner div
+	// clear all the 'screen-win-...' classes from the winner div
 	winnerScreen.classList.remove("screen-win-one");
 	winnerScreen.classList.remove("screen-win-two");
 	winnerScreen.classList.remove("screen-win-tie");

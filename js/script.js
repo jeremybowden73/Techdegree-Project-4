@@ -91,7 +91,7 @@ function showBoardScreen() {
 		if (player === 1) {
 			playerChooseTile(player);
 		} else {
-			cpuChooseTile(player); // player 2 is the computer
+			let timeoutID = window.setTimeout(cpuChooseTile, 1500, player); // player 2 is the computer; delay for 1.5 seconds for effect
 		}
 	}
 
@@ -102,7 +102,7 @@ function showBoardScreen() {
 			allBoardLIs[tile].classList.add("box-filled-2");
 			const winner = checkForWinner(player, boardUL);
 			if (winner) {
-				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 2 seconds for effect
+				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 1.5 seconds for effect
 			} else {
 				turn(player);
 			}

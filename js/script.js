@@ -33,24 +33,23 @@ function setUp() {
 		"</header >";
 	divStart.innerHTML = startScreenHTML;
 
-
 	const playerSelectDiv = document.getElementById("playersSelect");
 	const playerSelectForm = document.createElement("form");
 	playerSelectDiv.appendChild(playerSelectForm);
 	const playerSelectFormHTML =
-		"<form>" +
+		"<form id='playerselectForm'>" +
 		"<p>Please select game type...</p>" +
-		"<div>" +
-		"<input type='radio' id='2players' name='players' checked>" +
-		"<label for='2players'>2 humans</label>" +
-		"</div>" +
-		"<div>" +
-		"<input type='radio' id='1player' name='players'>" +
+		"<p>" +
+		"<input type='radio' id='1player' name='players' checked>" +
 		"<label for='1player'>1 human vs computer</label>" +
-		"</div>" +
-		"<div id='submitPlayers'>" +
-		"<a href='#' class='button' id='playersSelectButton'>SELECT</a>" +
-		//"<button type='submit' class='button'>SELECT</button>" +
+		"</p>" +
+		"<p>" +
+		"<input type='radio' id='2players' name='players'>" +
+		"<label for='2players'>2 humans</label>" +
+		"</p>" + "<br>" +
+		"<p>" +
+		"<input type='text' id='player1Name' name='player1Name' placeholder='Enter name of Player 1'>" +
+		"</p>" +
 		"</div>" +
 		"</div>" +
 		"</form>";
@@ -77,15 +76,10 @@ function setUp() {
 function showStartScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("start").style.display = "";
-	const startButton = document.getElementById("startButton");
-	startButton.style.display = "none"; // hide the Start Game button
-	const playersSelectButton = document.getElementById("playersSelectButton");
-	playersSelectButton.addEventListener("click", selectNumberOfPlayers, false);
-}
 
-function selectNumberOfPlayers() {
-	startButton.style.display = ""; // unhide the Start Game Button
+	const startButton = document.getElementById("startButton");
 	startButton.addEventListener("click", showBoardScreen, false);
+
 }
 
 function showBoardScreen() {
@@ -212,6 +206,13 @@ function showBoardScreen() {
 		each.classList.remove("box-filled-2");
 		each.style.backgroundImage = "";
 	});
+	// show the player names in the headers
+	const player1LI = document.getElementById("player1");
+	const player1NameDiv = document.createElement("div");
+	player1NameDiv.style.color = "rgb(0, 0, 0)";
+	player1NameDiv.style.fontSize = "1.5rem";
+	player1LI.appendChild(player1NameDiv);
+	player1NameDiv.innerHTML = document.getElementById("player1Name").value;
 
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();

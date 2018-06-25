@@ -48,7 +48,8 @@ function setUp() {
 		"<label for='2players'>2 humans</label>" +
 		"</p>" + "<br>" +
 		"<p>" +
-		"<input type='text' id='player1Name' placeholder='Enter name of Player 1'>" +
+		"<span class='playerName'>" + "<input type='text' id='player1Name' placeholder='Enter name of Player 1'>" + "</span>" +
+		"<span class='playerName'>" + "<input type='text' id='player2Name' placeholder='Enter name of Player 2'>" + "</span>" +
 		"</p>" +
 		"</div>" +
 		"</div>" +
@@ -76,6 +77,20 @@ function setUp() {
 function showStartScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("start").style.display = "";
+	// hide/show the text entry box for player 2 (not needed if it's player1 vs computer)
+	const player2Name = document.getElementById("player2Name");
+	player2Name.style.display = "none";
+	const onePlayerRadioButton = document.getElementById("1player");
+	onePlayerRadioButton.addEventListener("click", () => {
+		player2Name.style.display = "none";
+	});
+	const twoPlayersRadioButton = document.getElementById("2players");
+	twoPlayersRadioButton.addEventListener("click", () => {
+		player2Name.style.display = "";
+		player2Name.style.marginLeft = "2rem";
+	});
+
+
 	const startButton = document.getElementById("startButton");
 	startButton.addEventListener("click", showBoardScreen, false);
 
@@ -251,7 +266,7 @@ function showWinnerScreen(player) {
 		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player1Name").value;
 	} else if (player === 2) {
 		winnerScreen.classList.add("screen-win-two");
-		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 2"
+		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
 	} else {
 		winnerScreen.classList.add("screen-win-tie");
 		winnerScreen.querySelector(".message").innerHTML = "It's A Tie"

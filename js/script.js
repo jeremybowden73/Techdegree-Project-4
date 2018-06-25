@@ -48,7 +48,7 @@ function setUp() {
 		"<label for='2players'>2 humans</label>" +
 		"</p>" + "<br>" +
 		"<p>" +
-		"<input type='text' id='player1Name' name='player1Name' placeholder='Enter name of Player 1'>" +
+		"<input type='text' id='player1Name' placeholder='Enter name of Player 1'>" +
 		"</p>" +
 		"</div>" +
 		"</div>" +
@@ -69,14 +69,13 @@ function setUp() {
 		"</header>";
 	divWinner.innerHTML = winnerScreenHTML;
 
-	// call the function to show the start screem
+	// call the function to show the start screen
 	showStartScreen();
 }
 
 function showStartScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("start").style.display = "";
-
 	const startButton = document.getElementById("startButton");
 	startButton.addEventListener("click", showBoardScreen, false);
 
@@ -190,7 +189,7 @@ function showBoardScreen() {
 			(board[0] && board[4] && board[8]) || (board[2] && board[4] && board[6])) {
 			return player;
 		}
-		// check for a tie by counting how many "true" elements are in the board array if there
+		// check for a tie by counting how many "true" elements are in the board array, if there
 		// are 5 then player 1 must have had 5 turns, and there is no winner, so it must be a tie
 		if (board.filter(item => item === true).length === 5) {
 			return 3; // "player 3" is a tie
@@ -206,13 +205,31 @@ function showBoardScreen() {
 		each.classList.remove("box-filled-2");
 		each.style.backgroundImage = "";
 	});
+
 	// show the player names in the headers
 	const player1LI = document.getElementById("player1");
-	const player1NameDiv = document.createElement("div");
-	player1NameDiv.style.color = "rgb(0, 0, 0)";
-	player1NameDiv.style.fontSize = "1.5rem";
-	player1LI.appendChild(player1NameDiv);
-	player1NameDiv.innerHTML = document.getElementById("player1Name").value;
+	// if player 1 name doesn't exist, create it
+	if (!document.getElementById("player1NameDiv")) {
+		const player1NameDiv = document.createElement("div");
+		player1NameDiv.id = ("player1NameDiv");
+		player1LI.appendChild(player1NameDiv);
+		player1NameDiv.innerHTML = document.getElementById("player1Name").value;
+	}
+
+	const player2LI = document.getElementById("player2");
+	// if player 2 name doesn't exist, create it
+	if (!document.getElementById("player2NameDiv")) {
+		const player2NameDiv = document.createElement("div");
+		player2NameDiv.id = ("player2NameDiv");
+		player2LI.appendChild(player2NameDiv);
+		// "computer" or a second human name
+		//player2NameDiv.innerHTML = document.getElementById("player2Name").value;
+		player2NameDiv.innerHTML = "Computer";
+	}
+
+
+
+
 
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();
@@ -231,7 +248,7 @@ function showWinnerScreen(player) {
 	winnerScreen.style.display = "";
 	if (player === 1) {
 		winnerScreen.classList.add("screen-win-one");
-		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 1"
+		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player1Name").value;
 	} else if (player === 2) {
 		winnerScreen.classList.add("screen-win-two");
 		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 2"

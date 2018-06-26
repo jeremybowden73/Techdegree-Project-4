@@ -15,19 +15,48 @@ function setUp() {
 	divBoard.style.display = "none"; // hide it initially
 	const divBody = divBoard.parentNode;
 	divBody.id = ("body");
+
+	// create the Start screen
 	const divStart = document.createElement("div"); // create element for the Start page div
 	divStart.classList.add("screen", "screen-start"); // give it some classes
 	divStart.id = ("start"); // and give it an id
 	divBody.insertBefore(divStart, divBoard); // insert the Start page div into the <body> element before the Board div
 
-	// inject html content into the Start Screen main div
+	// inject html content into the Start screen main div
 	let startScreenHTML =
 		"<header>" +
 		"<h1> Tic Tac Toe</h1>" +
+		"<br><br><br><br>" +
+		"<div id=playersSelect></div>" +
+		"<br><br><br><br>" +
 		"<a href='#' class='button' id='startButton'>Start game</a>" +
 		"</header >";
 	divStart.innerHTML = startScreenHTML;
 
+	const playerSelectDiv = document.getElementById("playersSelect");
+	const playerSelectForm = document.createElement("form");
+	playerSelectDiv.appendChild(playerSelectForm);
+	const playerSelectFormHTML =
+		"<form id='playerselectForm'>" +
+		"<p>Please select game type...</p>" +
+		"<p>" +
+		"<input type='radio' id='1player' name='players' checked>" +
+		"<label for='1player'>1 human vs computer</label>" +
+		"</p>" +
+		"<p>" +
+		"<input type='radio' id='2players' name='players'>" +
+		"<label for='2players'>2 humans</label>" +
+		"</p>" + "<br>" +
+		"<p>" +
+		"<span class='playerName'>" + "<input type='text' id='player1Name' placeholder='Enter name of Player 1'>" + "</span>" +
+		"<span class='playerName'>" + "<input type='text' id='player2Name' placeholder='Enter name of Player 2'>" + "</span>" +
+		"</p>" +
+		"</div>" +
+		"</div>" +
+		"</form>";
+	playerSelectForm.innerHTML = playerSelectFormHTML;
+
+	// create the Winner screen
 	const divWinner = document.createElement("div"); // create element for the Winner page div
 	divWinner.classList.add("screen", "screen-win"); // add classes
 	divWinner.id = ("winner"); // and an id
@@ -41,15 +70,29 @@ function setUp() {
 		"</header>";
 	divWinner.innerHTML = winnerScreenHTML;
 
-	// call the function to show the start screem
+	// call the function to show the start screen
 	showStartScreen();
 }
 
 function showStartScreen() {
 	hideAllThreeMainDivScreens();
 	document.getElementById("start").style.display = "";
+	// hide/show the text entry box for player 2 (not needed if it's player1 vs computer)
+	const player2Name = document.getElementById("player2Name");
+	player2Name.style.display = "none";
+	const onePlayerRadioButton = document.getElementById("1player");
+	onePlayerRadioButton.addEventListener("click", () => {
+		player2Name.style.display = "none";
+	});
+	const twoPlayersRadioButton = document.getElementById("2players");
+	twoPlayersRadioButton.addEventListener("click", () => {
+		player2Name.style.display = "";
+		player2Name.style.marginLeft = "2rem";
+	});
+
 	const startButton = document.getElementById("startButton");
 	startButton.addEventListener("click", showBoardScreen, false);
+
 }
 
 function showBoardScreen() {
@@ -81,7 +124,7 @@ function showBoardScreen() {
 	}
 
 	// function to invoke when it is the next player's turn
-	function turn(player) {
+	function turn(player, numberOfPlayers) {
 		if (player === 1) {
 			player = 2;
 		} else {
@@ -89,30 +132,34 @@ function showBoardScreen() {
 		}
 		updateHeaders(player);
 		if (player === 1) {
-			playerChooseTile(player);
+			playerChooseTile(player, numberOfPlayers);
 		} else {
-			let timeoutID = window.setTimeout(cpuChooseTile, 1500, player); // player 2 is the computer; delay for 1.5 seconds for effect
+			if (numberOfPlayers === 2) {
+				playerChooseTile(player, numberOfPlayers);
+			} else {
+				let timeoutID = window.setTimeout(cpuChooseTile, 1500, player, numberOfPlayers); // player 2 is the computer; delay for 1.5 seconds for effect
+			}
 		}
 	}
 
-	function cpuChooseTile(player) {
+	function cpuChooseTile(player, numberOfPlayers) {
 		// choose a random tile
 		let tile = (Math.floor(Math.random() * 9));
 		if (!allBoardLIs[tile].classList.contains("box-filled-1") && !allBoardLIs[tile].classList.contains("box-filled-2")) {
 			allBoardLIs[tile].classList.add("box-filled-2");
 			const winner = checkForWinner(player, boardUL);
 			if (winner) {
-				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 1.5 seconds for effect
+				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner, numberOfPlayers); // delay for 1.5 seconds for effect
 			} else {
-				turn(player);
+				turn(player, numberOfPlayers);
 			}
 		} else {
-			cpuChooseTile(player); // if the tile the cpu chose a tile that is not available, invoke the function again
+			cpuChooseTile(player, numberOfPlayers); // if the tile the cpu chose a tile that is not available, invoke the function again
 		}
 	}
 
 
-	function playerChooseTile(player) {
+	function playerChooseTile(player, numberOfPlayers) {
 		// event listener for when any part of the whole board is moused over
 		boardUL.addEventListener("mouseover", mousedOver, false);
 		function mousedOver(event) {
@@ -135,9 +182,9 @@ function showBoardScreen() {
 				selectTile(player);
 				const winner = checkForWinner(player, boardUL);
 				if (winner) {
-					let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 2 seconds for effect
+					let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner, numberOfPlayers); // delay for 2 seconds for effect
 				} else {
-					turn(player);
+					turn(player, numberOfPlayers);
 				}
 			}
 		}
@@ -160,7 +207,7 @@ function showBoardScreen() {
 			(board[0] && board[4] && board[8]) || (board[2] && board[4] && board[6])) {
 			return player;
 		}
-		// check for a tie by counting how many "true" elements are in the board array if there
+		// check for a tie by counting how many "true" elements are in the board array, if there
 		// are 5 then player 1 must have had 5 turns, and there is no winner, so it must be a tie
 		if (board.filter(item => item === true).length === 5) {
 			return 3; // "player 3" is a tie
@@ -177,13 +224,50 @@ function showBoardScreen() {
 		each.style.backgroundImage = "";
 	});
 
+	// determine how many human players there are
+	let numberOfPlayers = 2;
+	if (document.getElementById("1player").checked === true) {
+		numberOfPlayers = 1;
+	}
+
+	// show the player names in the headers
+	const player1LI = document.getElementById("player1");
+	// if player 1 name doesn't exist, create it
+	if (!document.getElementById("player1NameDiv")) {
+		const player1NameDiv = document.createElement("div");
+		player1NameDiv.id = ("player1NameDiv");
+		player1LI.appendChild(player1NameDiv);
+		if (document.getElementById("player1Name").value) {
+			player1NameDiv.innerHTML = document.getElementById("player1Name").value;
+		} else {
+			player1NameDiv.innerHTML = "Unknown";
+		}
+	}
+
+	const player2LI = document.getElementById("player2");
+	// if player 2 name doesn't exist, create it
+	if (!document.getElementById("player2NameDiv")) {
+		const player2NameDiv = document.createElement("div");
+		player2NameDiv.id = ("player2NameDiv");
+		player2LI.appendChild(player2NameDiv);
+		if (numberOfPlayers === 1) {
+			player2NameDiv.innerHTML = "Computer";
+		} else {
+			if (document.getElementById("player2Name").value) {
+				player2NameDiv.innerHTML = document.getElementById("player2Name").value;
+			} else {
+				player2NameDiv.innerHTML = "Unknown";
+			}
+		}
+	}
+
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();
 	document.getElementById("board").style.display = "";
-	turn(2); // invoke the "turn" function for the first move to take place (turn toggles the player, so passing 2 to it will result in player 1 having the first go)
+	turn(2, numberOfPlayers); // invoke the "turn" function for the first move to take place (turn toggles the player, so passing 2 to it will result in player 1 having the first go)
 }
 
-function showWinnerScreen(player) {
+function showWinnerScreen(player, numberOfPlayers) {
 	hideAllThreeMainDivScreens();
 	const winnerScreen = document.getElementById("winner");
 	// clear all the 'screen-win-...' classes from the winner div
@@ -194,14 +278,34 @@ function showWinnerScreen(player) {
 	winnerScreen.style.display = "";
 	if (player === 1) {
 		winnerScreen.classList.add("screen-win-one");
-		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 1"
+		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player1Name").value;
 	} else if (player === 2) {
 		winnerScreen.classList.add("screen-win-two");
-		winnerScreen.querySelector(".message").innerHTML = "Winner: Player 2"
+		if (numberOfPlayers === 1) {
+			winnerScreen.querySelector(".message").innerHTML = "Winner: " + "Computer";
+		} else {
+			if (document.getElementById("player2Name").value) {
+				winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
+			} else {
+				winnerScreen.querySelector(".message").innerHTML = "Winner: " + "Unknown";
+			}
+		}
+		// winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
 	} else {
 		winnerScreen.classList.add("screen-win-tie");
 		winnerScreen.querySelector(".message").innerHTML = "It's A Tie"
 	}
+
+	if (numberOfPlayers === 1) {
+		player2NameDiv.innerHTML = "Computer";
+	} else {
+		if (document.getElementById("player2Name").value) {
+			player2NameDiv.innerHTML = document.getElementById("player2Name").value;
+		} else {
+			player2NameDiv.innerHTML = "Unknown";
+		}
+	}
+
 
 	// tweak the CSS to space the elements on the winner page a little
 	const message = winnerScreen.querySelector(".message");

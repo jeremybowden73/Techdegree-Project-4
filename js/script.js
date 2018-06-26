@@ -90,7 +90,6 @@ function showStartScreen() {
 		player2Name.style.marginLeft = "2rem";
 	});
 
-
 	const startButton = document.getElementById("startButton");
 	startButton.addEventListener("click", showBoardScreen, false);
 
@@ -125,7 +124,7 @@ function showBoardScreen() {
 	}
 
 	// function to invoke when it is the next player's turn
-	function turn(player) {
+	function turn(player, numberOfPlayers) {
 		if (player === 1) {
 			player = 2;
 		} else {
@@ -133,30 +132,34 @@ function showBoardScreen() {
 		}
 		updateHeaders(player);
 		if (player === 1) {
-			playerChooseTile(player);
+			playerChooseTile(player, numberOfPlayers);
 		} else {
-			let timeoutID = window.setTimeout(cpuChooseTile, 1500, player); // player 2 is the computer; delay for 1.5 seconds for effect
+			if (numberOfPlayers === 2) {
+				playerChooseTile(player);
+			} else {
+				let timeoutID = window.setTimeout(cpuChooseTile, 1500, player, numberOfPlayers); // player 2 is the computer; delay for 1.5 seconds for effect
+			}
 		}
 	}
 
-	function cpuChooseTile(player) {
+	function cpuChooseTile(player, numberOfPlayers) {
 		// choose a random tile
 		let tile = (Math.floor(Math.random() * 9));
 		if (!allBoardLIs[tile].classList.contains("box-filled-1") && !allBoardLIs[tile].classList.contains("box-filled-2")) {
 			allBoardLIs[tile].classList.add("box-filled-2");
 			const winner = checkForWinner(player, boardUL);
 			if (winner) {
-				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 1.5 seconds for effect
+				let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner, numberOfPlayers); // delay for 1.5 seconds for effect
 			} else {
-				turn(player);
+				turn(player, numberOfPlayers);
 			}
 		} else {
-			cpuChooseTile(player); // if the tile the cpu chose a tile that is not available, invoke the function again
+			cpuChooseTile(player, numberOfPlayers); // if the tile the cpu chose a tile that is not available, invoke the function again
 		}
 	}
 
 
-	function playerChooseTile(player) {
+	function playerChooseTile(player, numberOfPlayers) {
 		// event listener for when any part of the whole board is moused over
 		boardUL.addEventListener("mouseover", mousedOver, false);
 		function mousedOver(event) {
@@ -179,9 +182,9 @@ function showBoardScreen() {
 				selectTile(player);
 				const winner = checkForWinner(player, boardUL);
 				if (winner) {
-					let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner); // delay for 2 seconds for effect
+					let timeoutID = window.setTimeout(showWinnerScreen, 1500, winner, numberOfPlayers); // delay for 2 seconds for effect
 				} else {
-					turn(player);
+					turn(player, numberOfPlayers);
 				}
 			}
 		}
@@ -221,6 +224,12 @@ function showBoardScreen() {
 		each.style.backgroundImage = "";
 	});
 
+	// determine how many human players there are
+	let numberOfPlayers = 2;
+	if (document.getElementById("1player").checked === true) {
+		numberOfPlayers = 1;
+	}
+
 	// show the player names in the headers
 	const player1LI = document.getElementById("player1");
 	// if player 1 name doesn't exist, create it
@@ -228,7 +237,11 @@ function showBoardScreen() {
 		const player1NameDiv = document.createElement("div");
 		player1NameDiv.id = ("player1NameDiv");
 		player1LI.appendChild(player1NameDiv);
-		player1NameDiv.innerHTML = document.getElementById("player1Name").value;
+		if (document.getElementById("player1Name").value) {
+			player1NameDiv.innerHTML = document.getElementById("player1Name").value;
+		} else {
+			player1NameDiv.innerHTML = "Unknown";
+		}
 	}
 
 	const player2LI = document.getElementById("player2");
@@ -237,22 +250,24 @@ function showBoardScreen() {
 		const player2NameDiv = document.createElement("div");
 		player2NameDiv.id = ("player2NameDiv");
 		player2LI.appendChild(player2NameDiv);
-		// "computer" or a second human name
-		//player2NameDiv.innerHTML = document.getElementById("player2Name").value;
-		player2NameDiv.innerHTML = "Computer";
+		if (numberOfPlayers === 1) {
+			player2NameDiv.innerHTML = "Computer";
+		} else {
+			if (document.getElementById("player2Name").value) {
+				player2NameDiv.innerHTML = document.getElementById("player2Name").value;
+			} else {
+				player2NameDiv.innerHTML = "Unknown";
+			}
+		}
 	}
-
-
-
-
 
 	// to start the game, hide all screen divs except "board"
 	hideAllThreeMainDivScreens();
 	document.getElementById("board").style.display = "";
-	turn(2); // invoke the "turn" function for the first move to take place (turn toggles the player, so passing 2 to it will result in player 1 having the first go)
+	turn(2, numberOfPlayers); // invoke the "turn" function for the first move to take place (turn toggles the player, so passing 2 to it will result in player 1 having the first go)
 }
 
-function showWinnerScreen(player) {
+function showWinnerScreen(player, numberOfPlayers) {
 	hideAllThreeMainDivScreens();
 	const winnerScreen = document.getElementById("winner");
 	// clear all the 'screen-win-...' classes from the winner div
@@ -266,11 +281,31 @@ function showWinnerScreen(player) {
 		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player1Name").value;
 	} else if (player === 2) {
 		winnerScreen.classList.add("screen-win-two");
-		winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
+		if (numberOfPlayers === 1) {
+			winnerScreen.querySelector(".message").innerHTML = "Winner: " + "Computer";
+		} else {
+			if (document.getElementById("player2Name").value) {
+				winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
+			} else {
+				winnerScreen.querySelector(".message").innerHTML = "Winner: " + "Unknown";
+			}
+		}
+		// winnerScreen.querySelector(".message").innerHTML = "Winner: " + document.getElementById("player2Name").value;
 	} else {
 		winnerScreen.classList.add("screen-win-tie");
 		winnerScreen.querySelector(".message").innerHTML = "It's A Tie"
 	}
+
+	if (numberOfPlayers === 1) {
+		player2NameDiv.innerHTML = "Computer";
+	} else {
+		if (document.getElementById("player2Name").value) {
+			player2NameDiv.innerHTML = document.getElementById("player2Name").value;
+		} else {
+			player2NameDiv.innerHTML = "Unknown";
+		}
+	}
+
 
 	// tweak the CSS to space the elements on the winner page a little
 	const message = winnerScreen.querySelector(".message");

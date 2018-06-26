@@ -9,8 +9,10 @@
 
 */
 
-// Wrap entire code in a self-executing anonymous function to de-clutter the global namespace (aka basic Module Pattern)
-!function () {
+// Wrap entire code in a IIFE (immediately invoked function expression), or "basic Module Pattern"
+// to de-clutter the global namespace. Here's a great blogpost about basic Module Patterns
+// https://coryrylan.com/blog/javascript-module-pattern-basics
+const gameModule = (function () {  // give the namespace the name "gameModule"
 	// initial set-up; create the start screen and the winner screen, and hide all the screens
 	function setUp() {
 		const divBoard = document.getElementById("board"); // create variable for the Board div (main game board screen)
@@ -324,7 +326,7 @@
 	}
 
 	setUp(); // invoke the initial function to set up the screens
-}();
+}());
 
 
 

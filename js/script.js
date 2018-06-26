@@ -135,7 +135,7 @@ function showBoardScreen() {
 			playerChooseTile(player, numberOfPlayers);
 		} else {
 			if (numberOfPlayers === 2) {
-				playerChooseTile(player);
+				playerChooseTile(player, numberOfPlayers);
 			} else {
 				let timeoutID = window.setTimeout(cpuChooseTile, 1500, player, numberOfPlayers); // player 2 is the computer; delay for 1.5 seconds for effect
 			}

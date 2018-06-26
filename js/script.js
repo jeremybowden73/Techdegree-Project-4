@@ -9,8 +9,9 @@
 
 */
 
-// initial set-up; create the start screen and the winner screen, and hide all the screens
+// Wrap entire code in a self-executing anonymous function to de-clutter the global namespace (aka basic Module Pattern)
 !function () {
+	// initial set-up; create the start screen and the winner screen, and hide all the screens
 	function setUp() {
 		const divBoard = document.getElementById("board"); // create variable for the Board div (main game board screen)
 		divBoard.style.display = "none"; // hide it initially
